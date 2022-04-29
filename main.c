@@ -1,7 +1,6 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <stdlib.h>
-
 #include <termios.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -21,20 +20,15 @@
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 #endif
 
-void signal_handler_IO (int status);   /* definition of signal handler */
-//int wait_flag=TRUE;                    /* TRUE while no signal received */
-
 /***************************************************************************
 * signal handler. sets wait_flag to FALSE, to indicate above loop that     *
 * characters have been received.                                           *
 ***************************************************************************/
-void signal_handler_IO (int status)
-{
+void signal_handler_IO (int status) {
     //printf("received SIGIO signal.\n");
-    //wait_flag = FALSE;
 }
 
-int handle_tty_input(int fd){
+int handle_tty_input(int fd) {
     char buf[255];
     int res;
     res = read(fd,buf,255);
@@ -100,21 +94,19 @@ void setKbdMode(int dir) {
         tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
 
-int handle_kbd_input(int ttyfd){
+int handle_kbd_input(int ttyfd) {
     int ch = getchar();
     //printf("%c<%x>", ch, ch);
     char c = ch;
     write(ttyfd,&c,1);
 }
 
-main()
-{
+main() {
     int    ttyfd;  /* input sources 1 and 2 */
     fd_set readfs;    /* file descriptor set */
     int    maxfd;     /* maximum file desciptor used */
     int    loop=1;    /* loop while TRUE */
 
-    /*-------------------------------------------*/
     int c, res;
     struct termios oldtio,newtio;
     struct sigaction saio;           /* definition of signal action */
@@ -125,20 +117,20 @@ main()
     if (ttyfd<0) exit(0);
 
     setKbdMode(1);
+    int kbdfd = STDIN_FILENO ;
 
-    int kbdfd = STDIN_FILENO ; // STDIN
     maxfd = max (ttyfd, kbdfd)+1;  /* maximum bit entry (fd) to test */
 
-    /* loop for input */
+    /* loop for input from both TTY and keyboard */
     struct timeval timeout;
     while (loop) {
         FD_ZERO(&readfs);
-        FD_SET(ttyfd, &readfs);  /* set testing for source 1 */
+        FD_SET(ttyfd, &readfs);  /* set testing for tty */
         /* set timeout value within input loop */
         timeout.tv_usec = 0;  /* microseconds */
         timeout.tv_sec  = 0;  /* seconds */
         select(maxfd, &readfs, NULL, NULL, &timeout);
-        if (FD_ISSET(ttyfd,&readfs)) {
+        if (FD_ISSET(ttyfd, &readfs)) {
             /* input from TTY */
             handle_tty_input(ttyfd);
         }
@@ -146,9 +138,9 @@ main()
         timeout.tv_usec = 0;
         timeout.tv_sec  = 0;
         FD_ZERO(&readfs);
-        FD_SET(kbdfd, &readfs);
+        FD_SET(kbdfd, &readfs); /* set testing for keyboard */
         select(STDIN_FILENO+1, &readfs, NULL, NULL, &timeout);
-        if (FD_ISSET(kbdfd,&readfs)) {
+        if (FD_ISSET(kbdfd, &readfs)) {
             /* input from KBD */
             handle_kbd_input(ttyfd);
         }
