@@ -21,9 +21,8 @@
 #endif
 
 /***************************************************************************
-* signal handler. sets wait_flag to FALSE, to indicate above loop that     *
-* characters have been received.                                           *
-***************************************************************************/
+* signal handler.                                                          *
+****************************************************************************/
 void signal_handler_IO (int status) {
     //printf("received SIGIO signal.\n");
 }
