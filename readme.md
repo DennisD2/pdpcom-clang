@@ -31,3 +31,7 @@ In CLion Run/Debug window, that mode does not work as expected.
 To have real experience, the app must be run in a standard terminal,
 not in CLion.
 So if behaviour is strange, try out app in terminal first.
+
+## Related
+
+ASCII Table https://www.physics.udel.edu/~watson/scen103/ascii.html
