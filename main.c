@@ -50,7 +50,7 @@ int handle_tty_input(int fd){
 }
 
 int openTTYRaw(struct sigaction *saio, struct termios *oldtio, struct termios *newtio ) {
-    /* open the device to be non-blocking (read will return immediatly) */
+    /* open the device to be non-blocking (read will return immediately) */
     int fd = open(MODEMDEVICE, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd <0) {perror(MODEMDEVICE); exit(-1); }
 
@@ -128,7 +128,6 @@ main()
 
     int kbdfd = STDIN_FILENO ; // STDIN
     maxfd = max (ttyfd, kbdfd)+1;  /* maximum bit entry (fd) to test */
-
 
     /* loop for input */
     struct timeval timeout;
